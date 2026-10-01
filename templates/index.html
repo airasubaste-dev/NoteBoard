@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NoteBoard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #202124;
+            color: white;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background: #171717;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 36px;
+        }
+
+        header p {
+            margin-top: 10px;
+            color: #cccccc;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        .card {
+            background: #111111;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 18px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        textarea,
+        input {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            border: 1px solid #666;
+            border-radius: 10px;
+            background: #3a3a3a;
+            color: white;
+            font-size: 16px;
+        }
+
+        textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #bbbbbb;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 12px;
+            border: none;
+            border-radius: 10px;
+            background: #292929;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #444444;
+        }
+
+        .note {
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 15px;
+            background: #181818;
+        }
+
+        .note-content {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .category {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #333333;
+            color: #dddddd;
+            font-size: 13px;
+        }
+
+        .delete-button {
+            background: #333333;
+        }
+
+        .delete-button:hover {
+            background: #555555;
+        }
+
+        .empty {
+            color: #aaaaaa;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>NoteBoard</h1>
+        <p>Smart Note Scanning and Organization System</p>
+    </header>
+
+    <div class="container">
+<!-- ADD NOTE -->
+<div class="card">
+    <h2>📝 Add Note</h2>
+
+    <textarea
+        id="noteContent"
+        placeholder="Enter your note..."></textarea>
+
+    <input
+        id="noteCategory"
+        type="text"
+        placeholder="Category (e.g. Programming)">
+
+    <button onclick="addNote()">
+        Add Note
+    </button>
+     </div>
+       
+<!-- SCAN NOTE -->
+<div class="card">
+    <h2>📷 Scan Note</h2>
+
+    <p>
+        Upload an image of your handwritten or printed notes.
+    </p>
+
+    <input
+        type="file"
+        id="noteImage"
+        accept="image/*">
+
+    <button onclick="scanNote()">
+        Scan Note
+    </button>
+
+    <div id="scanResult"></div>
+    </div>
+
+
+        <!-- SEARCH -->
+        <div class="card">
+            <h2>🔍 Search Notes</h2>
+
+            <input
+                id="searchInput"
+                type="text"
+                placeholder="Search by keyword..."
+                onkeyup="searchNotes()">
+        </div>
+
+
+        <!-- NOTES -->
+        <div class="card">
+            <h2>📚 My Notes</h2>
+
+            <div id="notesList">
+                <p class="empty">Loading notes...</p>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+
+        // ADD NOTE
+        async function addNote() {
+
+            const content =
+                document.getElementById("noteContent").value.trim();
+
+            const category =
+                document.getElementById("noteCategory").value.trim()
+                || "General";
+
+            if (content === "") {
+                alert("Please enter a note.");
+                return;
+            }
+
+            const response = await fetch("/api/notes", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    note: content,
+                    category: category
+                })
+            });
+
+            if (response.ok) {
+
+                document.getElementById("noteContent").value = "";
+                document.getElementById("noteCategory").value = "";
+
+                await loadNotes();
+
+                alert("Note added successfully!");
+
+            } else {
+
+                alert("Failed to add note.");
+            }
+        }
+
+         
+
+        // LOAD NOTES
+        async function loadNotes() {
+
+            const response =
+                await fetch("/api/notes");
+
+            const notes =
+                await response.json();
+
+            displayNotes(notes);
+        }
+        
+async function scanNote() {
+
+    const fileInput = document.getElementById("noteImage");
+    const result = document.getElementById("scanResult");
+
+    if (fileInput.files.length === 0) {
+        alert("Please select an image first.");
+        return;
+    }
+
+    const image = fileInput.files[0];
+
+    result.innerHTML = "⏳ Reading your note... Please wait.";
+
+    const { data: { text } } = await Tesseract.recognize(
+        image,
+        "eng",
+        {
+            logger: info => {
+                if (info.status === "recognizing text") {
+                    result.innerHTML =
+                        "⏳ Reading... " +
+                        Math.round(info.progress * 100) +
+                        "%";
+                }
+            }
+        }
+    );
+
+    result.innerHTML = `
+        <h3>📝 Extracted Text</h3>
+        <p>${text}</p>
+    `;
+}
+        // DISPLAY NOTES
+        function displayNotes(notes) {
+
+            const notesList =
+                document.getElementById("notesList");
+
+            if (notes.length === 0) {
+
+                notesList.innerHTML =
+                    '<p class="empty">No notes found.</p>';
+
+                return;
+            }
+
+            notesList.innerHTML = "";
+
+            notes.forEach((note, index) => {
+
+                notesList.innerHTML += `
+
+                    <div class="note">
+
+                        <div class="note-content">
+                            ${note.note}
+                        </div>
+
+                        <div class="category">
+                            ${note.category}
+                        </div>
+
+                        <button
+                            class="delete-button"
+                            onclick="deleteNote(${index})">
+                            Delete
+                        </button>
+
+                    </div>
+
+                `;
+            });
+        }
+
+
+        // SEARCH NOTES
+        async function searchNotes() {
+
+            const keyword =
+                document.getElementById("searchInput").value;
+
+            const response =
+                await fetch(
+                    "/api/notes?search="
+                    + encodeURIComponent(keyword)
+                );
+
+            const notes =
+                await response.json();
+
+            displayNotes(notes);
+        }
+
+
+        // DELETE NOTE
+        async function deleteNote(index) {
+
+            const response =
+                await fetch(
+                    "/api/notes/" + index,
+                    {
+                        method: "DELETE"
+                    }
+                );
+
+            if (response.ok) {
+
+                await loadNotes();
+
+            } else {
+
+                alert("Failed to delete note.");
+            }
+        }
+
+
+        // LOAD NOTES WHEN PAGE OPENS
+        loadNotes();
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+</body>
+
+</html>
