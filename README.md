@@ -2,77 +2,109 @@
 
 ## Project Description
 
-NoteBoard is a student-focused note management system designed to help students organize and find their notes more easily.
+NoteBoard is a student-focused note management system designed to help students organize, save, and find their notes more easily.
 
-The proposed system follows this process:
+The system provides a web interface for adding notes, assigning categories, scanning note images, extracting text using OCR, searching notes by keyword, and deleting notes.
+
+### Main Workflow
 
 *Scan → Extract → Organize → Save → Search*
 
-## Problem
+## Problem Statement
 
-Students often have notes scattered across notebooks and phone photos. Finding specific topics can take time, and important information can become difficult to locate.
+Students often keep notes across notebooks and phone photos. Finding specific topics can take time, and important information can be difficult to locate.
 
 ## Proposed Solution
 
-NoteBoard provides one place where notes can be added, organized by category, saved, and searched using keywords.
-
-## OOP Classes
-
-The system uses the following classes:
-
-- User – represents a system user.
-- Note – represents a note and its category.
-- Category – represents a note category.
-- NoteScanner – handles the scanning process.
-- TextExtractor – handles text extraction.
-- NoteOrganizer – organizes note content and categories.
-- SearchManager – searches notes using keywords.
+NoteBoard provides a single interface where users can add and categorize notes, scan images to extract text, save notes, and search for information using keywords.
 
 ## Current Features
 
-- Add Note
-- View Notes
-- Delete Note
-- Search Notes
-- Categorize Notes
-- JSON Data Persistence
-- Object-Oriented Classes
-- Unit Testing
+- Add notes
+- Assign categories to notes
+- View saved notes
+- Scan note images using Tesseract.js OCR
+- Display extracted text
+- Transfer extracted text to the note editor
+- Search notes by keyword
+- Delete notes
+- Store notes in a JSON file through the Flask application
+- Responsive pastel-themed web interface
 
-## Testing
+## Object-Oriented Programming Classes
 
-Unit tests are implemented using Python unittest.
+The project includes the following Python classes:
 
-Current tests cover:
+- User – represents a system user.
+- Note – represents a note.
+- Category – represents a note category.
+- NoteScanner – provides a scanning component.
+- TextExtractor – provides a text-extraction component.
+- NoteOrganizer – organizes note content and categories.
+- SearchManager – searches notes using keywords.
 
-- Note creation
-- Category creation
-- Note searching
+Note: The web interface currently performs OCR through Tesseract.js in the browser. The Python scanning and text-extraction classes are separate prototype components.
 
-Current result:
+## Technologies Used
 
-*3 tests passed successfully.*
+- Python
+- Flask
+- HTML
+- CSS
+- JavaScript
+- Tesseract.js
+- JSON
+- pytest
 
-## Current Development Status
+## Requirements
 
-The current prototype has the core OOP structure, note management functions, search, persistence, and unit tests implemented.
+- Python installed
+- Flask and the packages listed in requirements.txt
+- A modern web browser
+- Internet connection for loading the Tesseract.js library from its CDN
 
-The scanning and text extraction components currently serve as the prototype structure for the planned image-to-text workflow.
-
-## Future Development
-
-- Actual image scanning
-- OCR/text extraction
-- AI-assisted note processing
-- Web/PWA interface
-- Improved organization
-- Export functionality
-- Additional testing
 ## How to Run
 
 1. Open the NoteBoard project folder in VS Code.
-2. Open the Terminal.
-3. Run the application:
+2. Open the integrated terminal.
+3. Install the dependencies:
 
-```bash
-python app.py
+   python -m pip install -r requirements.txt
+4. Start the web application:
+
+
+   python web_app.py
+
+5. Open the local address shown in the terminal, usually:
+
+   http://127.0.0.1:5000
+
+Keep the terminal open while using the application.
+
+## Testing
+
+Run the automated tests using:
+
+python -m pytest -v
+
+The current test suite covers note creation, category creation, and note searching.
+
+The previously recorded test run passed all three tests. Run the command again to verify the current version.
+
+## Data Storage
+
+Notes are stored in notes.json by the Flask application. Back up this file before making changes that could affect saved data.
+
+## Current Development Status
+
+The application currently provides a working web interface for note creation, image-based OCR, searching, deletion, and JSON-backed note storage.
+
+The Python scanning and text-extraction classes are prototype components and are not the OCR engine used by the web interface.
+
+## Future Improvements
+
+- Improve error handling and input validation
+- Expand automated tests for the web API and OCR workflow
+- Add note editing and additional organization features
+- Improve deployment and setup documentation
+- Explore optional AI-assisted study features

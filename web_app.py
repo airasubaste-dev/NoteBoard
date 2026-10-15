@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import json
 import os
 from note import Note
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -70,7 +71,8 @@ def add_note():
 
     new_note = {
         "note": note_obj.content,
-        "category": note_obj.category
+        "category": note_obj.category,
+        "date_time": datetime.now().strftime("%B %d, %Y - %I:%M %p")
     }
 
     notes.append(new_note)
