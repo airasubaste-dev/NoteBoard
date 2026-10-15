@@ -29,7 +29,9 @@ NoteBoard provides a single interface where users can add and categorize notes, 
 - Search notes by keyword
 - Delete notes
 - Store notes in a JSON file through the Flask application
+- Display the date and time for each saved note
 - Responsive pastel-themed web interface
+- Support scanning and text extraction through the web interface
 
 ## Object-Oriented Programming Classes
 
